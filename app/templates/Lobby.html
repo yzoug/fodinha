@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Simple JavaScript Tester 01</title>
+</head>
+
+<body>
+
+    <div id="app">
+        [[ band.message ]]
+    </div>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js"></script>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            delimiters =['[[', ']]'],
+            data: {
+                band: {}
+            },
+            mounted: function () {
+                console.log('in')
+                this.fetchData();
+            },
+            methods: {
+                fetchData: function () {
+                    console.log('in')
+                    this.$http.get('/').then(response => {
+                        this.band = response.body;
+                        console.log(this.band)
+                    }, response => {
+                        console.log("error")
+                    });
+                }
+            },
+
+        });
+    </script>
+</body>
+
+</html> 

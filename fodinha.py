@@ -1,10 +1,7 @@
 #!/usr/bin/env python
+from pprint import pprint
 import enum
 import random
-
-# TODO
-# problèmes suivants relevés:
-#
 
 class Color(enum.IntEnum):
     """Represent a card color
@@ -399,7 +396,6 @@ class Lobby:
 
         # we then set the first turn type for this gameturn
         # this is either guess or final_guess
-        # TODO LES FINAL_GUESS C UN BORDEL
         if self.count_alive_players() == 2:
             self.current_turn_type = TurnType.FINAL_GUESS
         else:
@@ -591,7 +587,7 @@ if __name__ == "__main__":
     newgame.start_game()
     while True:
         current_player = newgame.players[newgame.current_player_id]
-        print("\n", newgame.status(), "\n")
+        pprint(newgame.status())
         print("\nCurrent player:")
         print(str(current_player))
         if newgame.current_turn_type == TurnType.GUESS or newgame.current_turn_type == TurnType.FINAL_GUESS:

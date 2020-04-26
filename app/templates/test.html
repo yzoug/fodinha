@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="./static/css/bootstrap.min.css"/>
+
+	<link rel="stylesheet" href="./static/css/main.css"/>
+
+</head>
+
+<body>
+
+	<div id="main">
+		<div>
+			<div>
+				<h1>Hello</h1>
+				[[ data ]]
+			</div>
+		</div>
+
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+
+	<script>
+		// Creating a new Vue instance and pass in an options object.
+		var demo = new Vue({
+
+			// A DOM element to mount our view model.
+			el: '#main',
+
+			// Define properties and give them initial values.
+			delimiters: ['[[', ']]'],
+			data: {
+				Lobbies: ""
+			},
+			mounted: function () {
+				console.log('in')
+				this.fetchData();
+			},
+			methods: {
+				fetchData: function () {
+					console.log('in')
+					this.$http.get('/addLobby').then(response => {
+						this.data = response.body;
+						console.log(this.data)
+					}, response => {
+						console.log("error")
+					});
+				}
+			},
+		});
+	</script>
+</body>
+
+</html>
