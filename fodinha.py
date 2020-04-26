@@ -249,6 +249,7 @@ class Lobby:
         else:
             assert current_id >= 0 and current_id < self.number_of_players
             self.players.append(Player(current_id, name))
+            return current_id
 
     def set_current_number_of_turns(self):
         """Calculate the number of turns for this gameturn and set attributes"""
@@ -308,7 +309,6 @@ class Lobby:
                     return
                 i += 1
 
-            print("SHOULD NEVER REACH HERE")
             raise RuntimeError("No players left with cards, should have called close_gameturn")
 
     def update_current_wins(self):
@@ -362,9 +362,6 @@ class Lobby:
         # if the win value is not at one, it has been applied hence reset it
         if self.current_win_value != 1:
             self.current_win_value = 1
-        print("DEBUG UPDATE_CURRENT_WINS")
-        print(str(self.current_wins))
-        print(str(self.current_guesses))
 
 
     def prepare_gameturn(self):
@@ -414,9 +411,6 @@ class Lobby:
             if self.players[current_player_id].is_alive():
                 alive_player_ids.append(current_player_id)
             current_player_id = (current_player_id + 1) % self.number_of_players
-
-        print("ALIVE_PLAYER_IDS")
-        print(alive_player_ids)
 
         # zip the true ids of the players with their corresponding wins and guesses
         for i, g in zip(alive_player_ids, self.current_guesses):
@@ -548,25 +542,37 @@ class Lobby:
         # the game can start!
         self.prepare_gameturn()
 
+    def get_players(self):
+        """Return names, lives of all players and current dealer ID"""
+        return {'names': [p.name for p in self.players],
+                'lives': [p.number_of_lives for p in self.players],
+                'dealer_id': self.current_dealer_id}
+
+    def get_cards(self, player_id):
+        """Return the cards of the specified player"""
+        return {'cards': [str(c) for c in self.players[player_id].cards]}
+
+
     def status(self):
         """Return detailed status of game
 
         The returned JSON is in the following format:
         {
-            gameturn: current_gameturn_number
+            gameturn_number: current_gameturn_number
             current_beforemanilla: the drawn card that sets the manilla (the one above)
-            players: [ "id,name,number_of_lives,current_number_of_cards", ...]
             current_player_id: the player we are waiting on (either to play or guess)
             current_dealer_id: dealer, this is the id first guessing or playing
+            current_number_of_turns: how many turns for the current gameturn
+            current_turn_number: which turn number is it
             current_turn_type: either 'guess' (1) or 'play' (2), (3,4 if this is the final turn)
-            current_guesses: if applicable, '1,0,0,1,0...' the guesses of each player
-            current_played_cards: if applicable, ['1,1,12', '7,4,9', ...] (see Card class)
+            current_guesses: if applicable, '1,0,0,1,0...' the guesses of each player for current turn
+            current_wins: if applicable, '1,0,0,1,0...' the wins of each player for current turn
+            current_played_cards: if applicable, ['1;J', ...] (see Card class)
         }
         """
         return {
                 'gameturn_number': self.gameturn_number,
                 'current_beforemanilla': str(self.current_beforemanilla),
-                'players': [str(player) for player in self.players],
                 'current_player_id': self.current_player_id,
                 'current_dealer_id': self.current_dealer_id,
                 'current_number_of_turns': self.current_number_of_turns,
