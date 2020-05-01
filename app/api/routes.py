@@ -1,32 +1,13 @@
 from app import app
 from uuid import uuid4
-from app.api import api_bp
-from flask import Flask, render_template, json, request, session, abort, Response
+from app.api import bp
+from flask import Flask, render_template, json, request, session, abort, Response, flash, redirect, url_for
 from fodinha import Lobby, TurnType
 from markupsafe import escape
 
 lobbies = []
 
-@api_bp.route("/lobby/add", methods=["POST"])
-def add_lobby():
-    if len(lobbies) > 3:
-        # for now only allowing three simultaneous lobbies
-        abort(403)
-
-    lobby_id = len(lobbies)
-    req_nb_players = request.form.get('nb_players')
-    try:
-        nb_players = int(escape(req_nb_players))
-    except ValueError:
-        print('[E] can\'t convert to int: {}'.format(req_nb_players))
-        abort(400)
-
-    lobbies.append(Lobby(lobby_id, nb_players))
-    print('[I] new lobby created: {} players, of ID {}'.format(nb_players, lobby_id))
-
-    return Response(status=200)
-
-@api_bp.route("/lobby/<req_lobby_id>/delete", methods=["POST"])
+@bp.route("/lobby/<req_lobby_id>/delete", methods=["POST"])
 def del_lobby():
     """Deletes the lobby the player is registered in, if and only if he's the creator"""
     try:
@@ -51,7 +32,7 @@ def del_lobby():
 # c'est là que je crée la session
 # à part ce endpoint, je me base sur la session de l'utilisateur
 # pour déterminer le lobby_id et le player_number
-@api_bp.route("/lobby/<req_lobby_id>/register", methods=["POST"])
+@bp.route("/lobby/<req_lobby_id>/register", methods=["POST"])
 def register_player(req_lobby_id):
     # if trying to join a new lobby, clear session
     session.clear()
@@ -87,7 +68,7 @@ def register_player(req_lobby_id):
 
     return Response(status=200)
 
-@api_bp.route('/lobby/status', methods=["GET"])
+@bp.route('/lobby/status', methods=["GET"])
 def get_status():
     """Returns the status of the current game"""
     if session['name'] == None or session['lobby_id'] == None or session['player_id'] == None:
@@ -97,15 +78,20 @@ def get_status():
     return lobbies[session['lobby_id']].status()
 
 
-@api_bp.route('/players/list', methods=["GET"])
+@bp.route('/players/list', methods=["GET"])
 def list_players():
+    """Get list of players"""
     if session['name'] == None or session['lobby_id'] == None or session['player_id'] == None:
         print('[E: list_players] corrupted session')
         abort(500)
 
     return lobbies[session['lobby_id']].get_players()
 
-@api_bp.route('/players/cards', methods=["GET"])
+@bp.route('/lobby/list', methods=["GET"])
+def list_lobbies():
+    return {'lobbies': lobbies}
+
+@bp.route('/players/cards', methods=["GET"])
 def get_cards():
     """Get cards of a player"""
     if session['name'] == None or session['lobby_id'] == None or session['player_id'] == None:
@@ -125,7 +111,7 @@ game.register_player('dog')
 game.start_game()
 
 
-@api_bp.route('/debug', methods = ['GET', 'POST'])
+@bp.route('/debug', methods = ['GET', 'POST'])
 def debug():
     user = {'username': 'bruno'}
     if request.method == 'POST':

@@ -1,334 +1,45 @@
 {% extends "layout.html" %}
 {% block content %}
-<!-- Portfolio Section-->
-<div id="game">
-    <section class="page-section portfolio" id="portfolio">
-        <div class="container">
-            <!-- Portfolio Section Heading-->
-            <h2 style="margin-top: 0px;" class="page-section-heading text-center text-uppercase text-secondary mb-0">
-                Mesas</h2>
-            <!-- Icon Divider-->
-            <div class="divider-custom">
-                <div class="divider-custom-line"></div>
-                <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
-                <div class="divider-custom-line"></div>
-            </div>
-            <!-- create lobby button -->
-            <div style="text-align: center;">
-                <div>
-                    <button type="button" class="btn btn-secondary btn-lg" v-on:click="createLobby()">Create
-                        lobby</button>
-                </div>
-                <div style="margin-top: 10px; background-color: #222A51; border-radius: 8px; display: inline-block; padding: 5%;"
-                    v-show="nameLobbyBarDisplay">
-                    <div style="float:left; width: 70%;">
-                        <input class="form-control" v-model="nameLobby" type="text" placeholder="Choose a name !">
-                        <input class="form-control" style="margin-top: 8%;" v-model="nbPlayers" type="text"
-                            placeholder="Number of players">
-                    </div>
-                    <div style="float: left; width: 30%;margin-top: -2%">
-                        <button type="button" style="
-                        margin-left: 20%;
-                        width: 81%;
-                        margin-top: 36%;
-                    " class="btn btn-success btn-lg" v-on:click="addLobby(nameLobby, nbPlayers)">OK</button>
-                    </div>
-                </div>
 
-            </div>
-            <!-- Portfolio Grid Items-->
-            <div style="margin-top: 60px;" class="row">
-                <!-- Portfolio Item 1-->
-                <div v-for="(lobby, i) in lobbies" class="col-md-6 col-lg-4 mb-5">
-                    <div v-if="lobby.index===1" class="portfolio-item mx-auto" data-toggle="modal"
-                        data-target="#portfolioModal2">
-                        <div
-                            class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-                            <div class="portfolio-item-caption-content text-center text-white"><i
-                                    class="fas fa-plus fa-3x"></i></div>
-                        </div>
-
-                        <img class="img-fluid" src="./static/assets/img/portfolio/lobby.png" alt="" />
-                    </div>
-                    <div v-if="lobby.index===2" class="portfolio-item mx-auto" data-toggle="modal"
-                        data-target="#portfolioModal3">
-                        <div
-                            class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-                            <div class="portfolio-item-caption-content text-center text-white"><i
-                                    class="fas fa-plus fa-3x"></i></div>
-                        </div>
-
-                        <img class="img-fluid" src="./static/assets/img/portfolio/lobby.png" alt="" />
-                    </div>
-                    <div v-if="lobby.index===3" class="portfolio-item mx-auto" data-toggle="modal"
-                        data-target="#portfolioModal4">
-                        <div
-                            class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-                            <div class="portfolio-item-caption-content text-center text-white"><i
-                                    class="fas fa-plus fa-3x"></i></div>
-                        </div>
-
-                        <img class="img-fluid" src="./static/assets/img/portfolio/lobby.png" alt="" />
-                    </div>
-                    <div>
-                        <button type="button" class="btn btn-dark btn-lg"
-                            style="text-align: center; margin-top: 5px;width: 50%;"># [[ lobby.index ]] | [[ lobby.name
-                            ]]
-                        </button>
-                        <button class="btn btn-danger btn-lg" v-on:click="delLobby(lobby.index)"
-                            style="text-align: center;margin-left:2px; margin-top: 5px;width: 35%;">Delete</button>
-                    </div>
-                </div>
-
-            </div>
-
+<div class='top container'>
+    <h1> Index </h1>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class='alert alert-primary' role='alert'>
+            {% for message in messages %}
+            <ul>
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
         </div>
-
-        <div class="portfolio-modal modal fade" id="portfolioModal2" tabindex="-1" role="dialog"
-            aria-labelledby="portfolioModal2Label" aria-hidden="true">
-            <div class="modal-dialog modal-xl" role="document">
-                <div class="modal-content" style="background-color:rgb(38, 57, 95);">
-                    <div
-                        style="text-align: center;margin: 3%;padding: 2%;margin-bottom: -50px;background-color: rgb(22, 31, 40);border-radius: 33px;">
-                        <span style="color: white;font-size: xx-large;font-weight: bolder;border-radius: 33px;padding-left: 20%;padding-bottom: 1%;padding-right: 20%;">Lobby</span>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close "
-                            style="color: #fff !important">
-                            <span aria-hidden="true"><i class="fas fa-times"></i></span>
-                        </button>
-                    </div>
-
-                    <div class="modal-body text-center">
-                        <div class="container" style="border: 3px solid;border-radius: 33px;">
-                            <div class="row" style="border-bottom: 2px solid;">
-                                <div style="width: 100%; display:inline-block; margin-bottom: 2%; margin-top: 2%">
-                                    <span style="background-color:rgb(255, 127, 0);color: white;font-size: x-large;font-weight: bolder;border-radius: 33px;padding-left: 20%;padding-right: 20%; margin-bottom: 7px;">Players</span>
-                                </div>
-                                <div class="col" style="padding-left: 0!important; padding-right: 0 !important; ">
-                                    <ul class="list-group list-group-horizontal-sm">
-                                        <li v-for="(player, index) in playerDisplay1"
-                                            class="list-group-item d-flex justify-content-between align-items-center flex-fill"
-                                            style="display: inline-block; padding:0.25rem !important;background-color: rgb(55, 153, 37);color: white;font-weight: bolder;">
-                                            [[ player ]]
-                                            <span v-if="true" class="badge badge-primary badge-pill">D</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div v-show="playerDisplay2.length != 0" class="col"
-                                    style="padding-left: 0!important; padding-right: 0 !important; ">
-                                    <ul class="list-group list-group-horizontal-sm">
-                                        <li v-for="(player, index) in playerDisplay2"
-                                            class="list-group-item d-flex justify-content-between align-items-center flex-fill"
-                                            style="display: inline-block; padding:0.25rem !important;background-color: rgb(55, 153, 37);color: white;font-weight: bolder;">
-                                            [[ player ]]
-                                            <span v-if="true" class="badge badge-primary badge-pill">D</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div v-show="playerDisplay3.length != 0" class="col"
-                                    style="padding-left: 0!important; padding-right: 0 !important; ">
-                                    <ul class="list-group list-group-horizontal-sm">
-                                        <li v-for="(player, index) in playerDisplay3"
-                                            class="list-group-item d-flex justify-content-between align-items-center flex-fill"
-                                            style="display: inline-block; padding:0.25rem !important;background-color: rgb(55, 153, 37);color: white;font-weight: bolder;">
-                                            [[ player ]]
-                                            <span v-if="true" class="badge badge-primary badge-pill">D</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="container" style="margin-bottom: 30px;border-radius: 5px;padding:5%;margin-top:10px;border: 2px solid black;">
-                                <div class="row">
-                                    <div v-show="this.players.length > 0"  class="col" style="padding: 0.1%">
-                                        <vue-playing-card signature="4s" :width="70"></vue-playing-card>
-                                    </div>
-                                    <div v-show="this.players.length > 1"  class="col" style="padding: 0.1%">
-                                        <vue-playing-card signature="4s" :width="70"></vue-playing-card>
-                                    </div>
-                                    <div v-show="this.players.length > 2"  class="col" style="padding: 0.1%">
-                                        <vue-playing-card signature="4s" :width="70"></vue-playing-card>
-                                    </div>
-                                </div>
-                                <div class="row" style="margin-top:5%;">
-                                    <div v-show="this.players.length > 3"  class="col" style="padding: 0.1%">
-                                        <vue-playing-card signature="4s" :width="70"></vue-playing-card>
-                                    </div>
-                                    <div v-show="this.players.length > 4"  class="col" style="padding: 0.1%">
-                                        <vue-playing-card signature="4s" :width="70"></vue-playing-card>
-                                    </div>
-                                    <div v-show="this.players.length > 5"  class="col" style="padding: 0.1%">
-                                        <vue-playing-card signature="4s" :width="70"></vue-playing-card>
-                                    </div>
-                                </div>
-                                <div class="row" style=margin-top:5%>
-                                    <div v-show="this.players.length > 6"  class="col" style="padding: 0.1%">
-                                        <vue-playing-card signature="4s" :width="70"></vue-playing-card>
-                                    </div>
-                                    <div v-show="this.players.length > 7"  class="col" style="padding: 0.1%">
-                                        <vue-playing-card signature="4s" :width="70"></vue-playing-card>
-                                    </div>
-                                    <div v-show="this.players.length > 8"  class="col" style="padding: 0.1%">
-                                        <vue-playing-card signature="4s" :width="70"></vue-playing-card>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      {% endif %}
+    {% endwith %}
+    <p class='lead'> Aqui pode escolher uma partida ou criar uma nova </p>
+    <p> Até três partidas simultâneas </p>
+    <form action="{{ url_for('ui.add_lobby') }}">
+        <h2> Criar uma partida </h2>
+        <div class='form-group'>
+            <label for="name">Nome:</label>
+            <input type="text" class="form-control" id="name" aria-describedby="Escolha um nome ou pseudônimo">
         </div>
+        <div class='form-group'>
+            <label for="nb_players">Número de jogadores:</label>
+            <input type="number" class="form-control" id="nb_players" aria-describedby="Quantos jogadores">
+        </div>
+        <div class='form-group'>
+            <label for="name_lobby">Nome da partida:</label>
+            <input type="text" class="form-control" id="name_lobby">
+        </div>
+        <button type="submit" class="btn btn-primary">Criar</button>
+    </form>
+    <br>
+    <form action="{{ url_for('ui.join_lobby') }}">
+        <h2> Participar numa partida </h2>
+        <div class='form-group'>
+            <label for="name">Nome:</label>
+            <input type="text" class="form-control" id="name" aria-describedby="Escolha um nome ou pseudônimo">
+        </div>
+        <button type="submit" class="btn btn-primary">Jogar</button>
+    <form>
 
-</div>
-</section>
-
-{% endblock %}
-
-{% block scripts %}
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
-
-<script src="https://unpkg.com/vue-playing-card/dist/vue-playing-card.min.js"></script>
-<script>Vue.component(VuePlayingCard.name, VuePlayingCard);</script>
-
-<script>
-    // Creating a new Vue instance and pass in an options object.
-    var game = new Vue({
-
-        // A DOM element to mount our view model.
-        el: '#game',
-
-        // Define properties and give them initial values.
-        delimiters: ['[[', ']]'],
-        data: {
-            data: "ok",
-            indexLobby: 0,
-            nbLobbies: 0,
-            lobbies: [],
-            nameLobbyBarDisplay: false,
-            nameLobby: '',
-            nbPlayers: '',
-            players: [],
-            playerDisplay1: [],
-            playerDisplay2: [],
-            playerDisplay3: [],
-
-        },
-        created () {
-            fetch({{ url_for('api_bp.list_lobbies') }})
-                .then(response => response.json())
-                .then(json => {
-                    this.lobbies = json.lobbies
-                })
-        },
-        mounted: function () {
-            console.log('in')
-            this.fetchData();
-            this.getPlayers();
-        },
-        methods: {
-            fetchData: function () {
-                console.log('in')
-                this.$http.get('/jsonreturn').then(response => {
-                    this.data = response.body;
-                    console.log(this.data)
-                }, response => {
-                    console.log("error")
-                });
-            },
-            addLobby: function (nameLobbyFunc, nb_Players) {
-                this.nbLobbies = this.nbLobbies + 1;
-                if (this.indexLobby === 3) {
-                    this.indexLobby = 0;
-                }
-                this.indexLobby = this.indexLobby + 1;
-                this.lobbies.push({ index: this.indexLobby, name: nameLobbyFunc });
-                this.nameLobbyBarDisplay = false;
-                console.log('addLobby');
-
-
-                str_id_lobby = String(this.indexLobby);
-                str_nb_players = String(nb_Players);
-
-                let json_lobby = {
-                    'lobby_index': str_id_lobby,
-                    'lobby_nb_players': str_nb_players,
-                }
-
-                this.$http.post('/addLobby', json_lobby).then(response => {
-                    this.data = response.body;
-                    console.log("success")
-                }, response => {
-                    console.log("error")
-                });
-                console.log('lobbies')
-                console.log(this.lobbies)
-
-            },
-
-            createLobby: function () {
-                if ((this.lobbies.length) < 3) {
-                    if (this.nameLobbyBarDisplay === true) {
-                        this.nameLobbyBarDisplay = false;
-                    } else if (this.nameLobbyBarDisplay === false) {
-                        console.log()
-                        this.nameLobbyBarDisplay = true;
-                    }
-                } else {
-                    console.log("Max lobbies reached")
-                }
-            },
-
-            delLobby: function (index) {
-                this.nbLobbies = this.nbLobbies - 1;
-                if (index > -1) {
-                    console.log('index to delete')
-                    console.log(index)
-                    console.log('lobbies')
-                    console.log(this.lobbies)
-                    for (let i = 0; i < this.lobbies.length; i++) {
-                        console.log("lobbyindex")
-                        console.log(this.lobbies[i].index)
-                        if (this.lobbies[i].index === index) {
-                            this.lobbies.splice(i, 1);
-                            console.log("deleted")
-                        }
-                    }
-                }
-                str_id_lobby = String(index);
-                let json_lobby = {
-                    'lobby_index': str_id_lobby,
-                }
-
-                this.$http.post('/delLobby', json_lobby).then(response => {
-                    console.log("success")
-                }, response => {
-                    console.log("error")
-                });
-                console.log('lobbies')
-                console.log(this.lobbies)
-            },
-            getPlayers: function (nameLobbyFunc) {
-                this.$http.get('/players').then(response => {
-                    this.players = response.body;
-                    let nbPlayers = this.players.length;
-                    for (let i = 0; i < nbPlayers; i++) {
-                        if (i < 3) {
-                            this.playerDisplay1[i] = this.players[i];
-                        } else if (i < 6) {
-                            this.playerDisplay2[i - 3] = this.players[i];
-                        } else {
-                            this.playerDisplay3[i - 6] = this.players[i];
-                        }
-                    }
-                    console.log('this.players')
-                    console.log(this.players)
-
-                }, response => {
-                    console.log("error getPlayers")
-                });
-            },
-
-        },
-    });
-</script>
 {% endblock %}
