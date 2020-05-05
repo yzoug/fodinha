@@ -2,10 +2,9 @@ from app import app
 from uuid import uuid4
 from app.api import bp
 from flask import Flask, render_template, json, request, session, abort, Response, flash, redirect, url_for
-from fodinha import Lobby, TurnType
 from markupsafe import escape
-
-lobbies = []
+from app import db
+from app.models import Lobby, Player, Card
 
 @bp.route("/lobby/<req_lobby_id>/delete", methods=["POST"])
 def del_lobby():
@@ -27,7 +26,6 @@ def del_lobby():
     lobbies.pop(lobby_id)
 
     return Response(status=200)
-
 
 # c'est là que je crée la session
 # à part ce endpoint, je me base sur la session de l'utilisateur
@@ -100,27 +98,52 @@ def get_cards():
 
     return lobbies[session['lobby_id']].get_cards(session['player_id'])
 
+@bp.route("/lobby/add", methods=["POST"])
+def add_lobby():
+    if len(lobbies) > 3:
+        # for now only allowing three simultaneous lobbies
+        flash('Já foram criados 3 jogos')
+        return redirect(url_for('ui.index'))
+
+    lobby_id = len(lobbies)
+    req_nb_players = request.form.get('nb_players')
+    try:
+        nb_players = int(escape(req_nb_players))
+    except ValueError:
+        print('[E] can\'t convert to int: {}'.format(req_nb_players))
+        abort(400)
+
+    lobbies.append(Lobby(lobby_id, nb_players))
+    print('[I] new lobby created: {} players, of ID {}'.format(nb_players, lobby_id))
+
+    return redirect(url_for('ui.lobby'))
+
+@bp.route("/lobby/join", methods=["POST"])
+def join_lobby():
+    req_name = request.form.get('name')
+    req_nb_players = request.form.get('nb_players')
+
 
 # for testing purposes
 # only accessible for debug page
-game = Lobby(1, 3)
-# these all need to go in the api
-game.register_player('pitoco')
-game.register_player('formigas')
-game.register_player('dog')
-game.start_game()
-
-
-@bp.route('/debug', methods = ['GET', 'POST'])
-def debug():
-    user = {'username': 'bruno'}
-    if request.method == 'POST':
-        data = request.form
-        print("Received data: {}".format(data))
-        if game.current_turn_type == TurnType.GUESS or game.current_turn_type == TurnType.FINAL_GUESS:
-            game.guess(int(data.get('player_id')),int(data.get('choice')))
-        elif game.current_turn_type == TurnType.PLAY or game.current_turn_type == TurnType.FINAL_PLAY:
-            game.play(int(data.get('player_id')),int(data.get('choice')))
-    game_status = str(game.status())
-    return render_template('debug.html', title='Fodinha', user=user, game_status = game_status, current_player = user)
-
+#game = Lobby(1, 3)
+## these all need to go in the api
+#game.register_player('pitoco')
+#game.register_player('formigas')
+#game.register_player('dog')
+#game.start_game()
+#
+#
+#@bp.route('/debug', methods = ['GET', 'POST'])
+#def debug():
+#    user = {'username': 'bruno'}
+#    if request.method == 'POST':
+#        data = request.form
+#        print("Received data: {}".format(data))
+#        if game.current_turn_type == TurnType.GUESS or game.current_turn_type == TurnType.FINAL_GUESS:
+#            game.guess(int(data.get('player_id')),int(data.get('choice')))
+#        elif game.current_turn_type == TurnType.PLAY or game.current_turn_type == TurnType.FINAL_PLAY:
+#            game.play(int(data.get('player_id')),int(data.get('choice')))
+#    game_status = str(game.status())
+#    return render_template('debug.html', title='Fodinha', user=user, game_status = game_status, current_player = user)
+#
